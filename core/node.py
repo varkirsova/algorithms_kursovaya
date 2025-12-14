@@ -29,7 +29,7 @@ class Node:
         elif self.type == NodeType.BINARY_OPERATOR:
             if self.left is None or self.right is None:
                 raise ValueError("бинарный оператор должен иметь двух потомков!")
-            if self.value not in ['+', '-', '*', '/']:
+            if self.value not in ['+', '-', '*', '/', '^']:
                 raise ValueError(f"неподходящий оператор: {self.value}")
 
         elif self.type == NodeType.UNARY_OPERATOR:

@@ -5,6 +5,7 @@ class NodeType:
 
 class Node:
     """атрибуты будут или нет?"""
+    """да как будто все окей, они же там и есть атрибуты в ините"""
     def __init__(self, value, node_type, left=None, right=None):
         self.value = value
         self.type = node_type
@@ -39,6 +40,41 @@ class Node:
                 raise ValueError("унарный оператор должен иметь только правого потомка!")
             if self.value != '-':
                 raise ValueError(f"неподходящий унарный оператор: {self.value}")
+
+        # через рекурсию
+        def prefix(self):
+            if self.type == NodeType.NUMBER:
+                return str(self.value) # просто число - детей нет
+
+            elif self.type == NodeType.UNARY_OPERATOR:
+                return f"- {self.right.prefix()}" # унарный минус - идем вправо рекурсией
+            elif self.type == NodeType.BINARY_OPERATOR:
+                return f"{self.value} {self.left.prefix()} {self.right.prefix()}" # оператор - обоих детей смотрим рекурсией
+
+        # то же самое зеркально
+        def postfix(self):
+            if self.type == NodeType.NUMBER:
+                return str(self.value)
+            elif self.type == NodeType.UNARY_OPERATOR:
+                return f"{self.right.postfix()} -"
+
+            elif self.type == NodeType.BINARY_OPERATOR:
+                return f"{self.left.postfix()} {self.right.postfix()} {self.value}"
+
+        def infix(self):
+            if self.type == NodeType.NUMBER:
+                return str(self.value)
+
+            elif self.type == NodeType.UNARY_OPERATOR:
+                return f"-{self.right.infix()}"
+
+            # elif self.type == NodeType.BINARY_OPERATOR:
+            #     left_str = self._wrap_infix(self.left, self.value, is_left=True)
+            #     right_str = self._wrap_infix(self.right, self.value, is_left=False)
+            #     return f"{left_str} {self.value} {right_str}"
+            """с этим еще не разобралась, доделаю позже по поводу еще одного метода для расставления скобок и приоритетов"""
+
+
 
     def is_leaf(self):
         return self.type == NodeType.NUMBER

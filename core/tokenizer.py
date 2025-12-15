@@ -98,3 +98,57 @@ class Tokenizer: #строка -> список токенов
             for pattern, token_type in self.TOKEN_PATTERNS:
                 # re.compile('^' + pattern) - модуль и метод, '^' начало строки, + склейка
                 self.compiled_patterns.append((re.compile('^'+pattern), token_type))
+
+        while expression:
+            matched = False
+            for pattern, token_type in self.compiled_patterns:
+                match = pattern.match(expression)
+
+                if match:
+                    value = match.group(0)
+
+                    token = Token(token_type, value, self.current_pos)
+                    self.tokens.append(token)
+                    self.current_pos += len(value)
+                    expression = expression[len(value):]
+                    matched = True
+                    break
+
+            if not matched:
+                raise InvalidCharacterError(expression[0], self.current_pos)
+
+                self._identify_minus_types()
+
+        self.tokens.append(Token(TokenType.EOF, '', self.current_pos))
+
+        return self.tokens
+
+    def _identify_minus_types(self):
+
+        for i, token in enumerate(self.tokens):
+            if token.type == TokenType.MINUS:
+                if self._is_unary_minus(i):
+                    token.type = TokenType.UNARY_MINUS
+
+    def _is_unary_minus(self, position: int) -> bool:
+        if position == 0:
+            return True
+
+        prev_token = self.tokens[position - 1]
+
+        # Если предыдущий токен - оператор или левая скобка, то минус унарный
+        unary_triggers = [
+            TokenType.PLUS, TokenType.MINUS, TokenType.UNARY_MINUS,
+            TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.POWER,
+            TokenType.LPAREN
+        ]
+
+        return prev_token.type in unary_triggers
+
+    def print_tokens(self):
+        print("=" * 60)
+        print("СПИСОК ТОКЕНОВ:")
+        print("=" * 60)
+        for token in self.tokens:
+            print(f"  {token}")
+        print("=" * 60)

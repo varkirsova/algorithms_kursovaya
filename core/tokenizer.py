@@ -143,6 +143,31 @@ class Tokenizer: #строка -> список токенов
         ]
 
         return prev_token.type in unary_triggers
+    def next_token(self): # строка токена
+        if self.current_pos < len(self.tokens):
+            token = self.tokens[self.current_pos]
+            self.current_pos += 1
+
+            if token.type == TokenType.NUMBER:
+                return token.value
+            elif token.type == TokenType.UNARY_MINUS:
+                return "u-"
+            else:
+                return token.value  # + - / * ^
+        return None
+
+    def peek_token(self):
+        if self.current_pos < len(self.tokens):
+            token = self.tokens[self.current_pos]
+            if token.type == TokenType.NUMBER:
+                return token.value
+            elif token.type == TokenType.UNARY_MINUS:
+                return "u-"
+            else:
+                return token.value
+        return None
+
+
 
     def print_tokens(self):
         print("=" * 60)

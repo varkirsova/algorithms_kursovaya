@@ -66,7 +66,15 @@ class Node:
             return str(self.value)
 
         elif self.type == NodeType.UNARY_OPERATOR:
-            return f"-{self.right.infix()}"
+            right_expr = self.right.infix()
+            if self.right.type == NodeType.NUMBER:
+                return f"-{right_expr}"
+
+            elif self.right.type == NodeType.UNARY_OPERATOR:
+                return f"-({right_expr})"
+
+            else:
+                return f"-({right_expr})"
 
         elif self.type == NodeType.BINARY_OPERATOR:
             left_str = self.infix_balance_prior(self.left, self.value, is_left=True)

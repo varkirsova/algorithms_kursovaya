@@ -21,7 +21,7 @@ class DivisionByZeroError(EvaluationError): #деление на ноль
     def __init__(self):
         super().__init__("деление на ноль")
 
-class SyntaxError(ParserError): #синтаксю ошибка в выражении
+class SyntaxError(ParserError): #синтакс. ошибка в выражении
     def __init__(self, message, position=None):
         if position is not None:
             super().__init__(f"синтаксическая ошибка на позиции {position}: {message}")

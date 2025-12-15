@@ -117,14 +117,13 @@ class Tokenizer: #строка -> список токенов
             if not matched:
                 raise InvalidCharacterError(expression[0], self.current_pos)
 
-                self._identify_minus_types()
+        self._identify_minus_types()
 
         self.tokens.append(Token(TokenType.EOF, '', self.current_pos))
 
         return self.tokens
 
     def _identify_minus_types(self):
-
         for i, token in enumerate(self.tokens):
             if token.type == TokenType.MINUS:
                 if self._is_unary_minus(i):
@@ -136,7 +135,7 @@ class Tokenizer: #строка -> список токенов
 
         prev_token = self.tokens[position - 1]
 
-        # Если предыдущий токен - оператор или левая скобка, то минус унарный
+        # унарный, если перед ним ( или оператор
         unary_triggers = [
             TokenType.PLUS, TokenType.MINUS, TokenType.UNARY_MINUS,
             TokenType.MULTIPLY, TokenType.DIVIDE, TokenType.POWER,

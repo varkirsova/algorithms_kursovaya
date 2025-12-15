@@ -80,9 +80,21 @@ class Tokenizer: #строка -> список токенов
         self.tokens = []
         self.current_pos = 0
         self.expression = "" #исх. выражение
-        self.compiled_patterns = None #скомпил. регуляр. выражения
+        self.compiled_patterns = None #скомпил. регуляр. выражения, типа кэщ
 
     def tokenize(self, expression: str) -> list[Token]:
         self.expression = expression
         self.current_pos = 0
         self.tokens = []
+
+        expression_without_spaces = expression.replace(' ', '')
+        if not expression_without_spaces:
+            self.tokens.append(Token(TokenType.EOF, '', 0))
+            return self.tokens
+
+        if self.compiled_patterns is None:
+            self.compiled_patterns = []
+
+            for pattern, token_type in self.TOKEN_PATTERNS:
+                # re.compile('^' + pattern) - модуль и метод, '^' начало строки, + склейка
+                self.compiled_patterns.append((re.compile('^'+pattern), token_type))

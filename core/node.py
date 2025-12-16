@@ -94,18 +94,20 @@ class Node:
             return f"({child.infix()})"
 
         elif child_priority == parent_priority:
+            if parent_op == '^':  # в случае степени нужно скобки ставить в конец т е в правый операнд
+                if is_left:
+                    return child.infix()
+                else:
+                    return f"({child.infix()})"
 
-            # в случае степени нужно скобки ставить в конец т е в правый операнд
-            if parent_op == '^':
-                return child.infix() if is_left else f"({child.infix()})"
+            elif parent_op in ('-', '/'):  # с этими знаками важна последовательность, поэтому всегда скобки
+                return f"({child.infix()})"
 
-            # с этими знаками важна последовательность, поэтому всегда скобки
-            if parent_op in ('-', '/'):
-                return child.infix() if is_left else f"({child.infix()})"
-
-            # + и * просто
-            return child.infix()
-
+            else:  # остальные - можно не ставить скобки (рез не меняется) но для красоты можно
+                if is_left:
+                    return f"({child.infix()})"
+                else:
+                    return child.infix()
 
         else:  # больший приоритет у ребенка - скобки не нужны
             return child.infix()

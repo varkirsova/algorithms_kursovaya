@@ -1,5 +1,5 @@
-from core.node import Node, NodeType
-from core.tokenizer import Tokenizer
+from node import Node, NodeType
+from tokenizer import Tokenizer
 
 
 class Parser:
@@ -9,90 +9,73 @@ class Parser:
             '+': 1, '-': 1,
             '*': 2, '/': 2,
             '^': 3,
-            'u-': 5  # унарный минус имеет высший приоритет
+            'u-': 4
         }
 
     def parse(self, expression):
-        """Основной метод парсинга"""
         self.tokenizer.tokenize(expression)
-        self.tokenizer.current_pos = 0
+        tree = self.parse_expression()
 
-        tree = self._parse_expression()
-
-        # Проверяем, что все токены обработаны
-        next_token = self.tokenizer.next_token()
-        if next_token is not None:
-            raise ValueError(f"Лишние токены после выражения: '{next_token}'")
+        if self.tokenizer.peek_token() is not None:
+            remaining = []
+            while self.tokenizer.peek_token() is not None:
+                remaining.append(self.tokenizer.next_token())
+            raise ValueError(f"Лишние токены: {remaining}")
 
         return tree
 
-    def _parse_expression(self, min_precedence=0):
-        """Парсит выражение с учетом приоритетов"""
-        # Обработка унарного минуса
-        if self.tokenizer.peek_token() == 'u-':
-            self.tokenizer.next_token()  # забираем 'u-'
-            operand = self._parse_expression(min_precedence=5)  # унарный минус имеет приоритет 5
-            left = Node('-', NodeType.UNARY_OPERATOR, right=operand)
-        else:
-            # Иначе парсим обычный primary
-            left = self._parse_primary()
-
-        # Парсим бинарные операторы
-        while True:
-            token = self.tokenizer.peek_token()
-
-            # Условия выхода
-            if (token is None or
-                    token not in self.operators or
-                    token == ')' or
-                    self.operators.get(token, 0) < min_precedence):
-                break
-
-            op_token = self.tokenizer.next_token()
-            op_precedence = self.operators[op_token]
-
-            # Для степени - правоассоциативность
-            if op_token == '^':
-                next_min_precedence = op_precedence
-            else:
-                next_min_precedence = op_precedence + 1
-
-            # Парсим правую часть
-            right = self._parse_expression(next_min_precedence)
-
-            # Создаем узел
-            left = Node(op_token, NodeType.BINARY_OPERATOR, left, right)
-
-        return left
-
-    def _parse_primary(self):
-        """Парсит числа и выражения в скобках"""
+    def parse_primary(self):
         token = self.tokenizer.next_token()
 
         if token is None:
             raise ValueError("Неожиданный конец выражения")
 
-        # Число
-        if token and self._is_number(token):
+        if token.isdigit():
             return Node(int(token), NodeType.NUMBER)
 
-        # Скобки
+        elif token == 'u-':
+            if self.tokenizer.peek_token() is None:
+                raise ValueError("Ожидался операнд после унарного минуса")
+
+            operand = self.parse_expression(min_precedence=1)
+            return Node('-', NodeType.UNARY_OPERATOR, right=operand)
+
         elif token == '(':
-            expr = self._parse_expression()
+            if self.tokenizer.peek_token() == ')':
+                raise ValueError("Пустые скобки")
+
+            expr = self.parse_expression()
+
             next_token = self.tokenizer.next_token()
             if next_token != ')':
                 raise ValueError(f"Ожидалась ')', получено '{next_token}'")
+
             return expr
 
         else:
             raise ValueError(f"Неожиданный токен: '{token}'")
 
-    def _is_number(self, token):
-        """Проверяет, является ли токен числом"""
-        if not token:
-            return False
+    def parse_expression(self, min_precedence=0):
+        left = self.parse_primary()
 
-        # Убираем возможный минус в начале
-        if token[0] == '-':
-            return token[1:].isdigit()
-        return token.isdigit()
+        while True:
+            token = self.tokenizer.peek_token()
+
+            if (token is None or
+                    token not in self.operators or
+                    token == ')' or
+                    self.operators[token] < min_precedence):
+                break
+
+            op_token = self.tokenizer.next_token()
+            op_precedence = self.operators[op_token]
+
+            if op_token != '^':
+                next_min_precedence = op_precedence + 1
+            else:
+                next_min_precedence = op_precedence
+
+            right = self.parse_expression(next_min_precedence)
+            left = Node(op_token, NodeType.BINARY_OPERATOR, left, right)
+
+        return left

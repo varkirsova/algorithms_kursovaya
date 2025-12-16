@@ -1,5 +1,5 @@
-from core.node import Node, NodeType
-from utils.errors import *
+from .node import Node, NodeType
+from ..utils.errors import EvaluationError
 
 class Evaluator:
     @staticmethod

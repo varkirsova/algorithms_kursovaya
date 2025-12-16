@@ -1,6 +1,7 @@
 from core.tokenizer import Tokenizer
 from core.parser import Parser
 from core.evaluator import Evaluator
+from utils.visualizer import visualizer
 
 from utils.errors import (
     TokenizerError,
@@ -40,8 +41,8 @@ def main():
             tree = parser.parse(expr)
 
             # --- AST ---
-            print("\nAST:")
-            print(tree)
+            print("\nAST (визуализация):")
+            visualizer.visualize(tree)
 
             # --- НОТАЦИИ ---
             print("\nНотации:")

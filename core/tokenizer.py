@@ -143,29 +143,43 @@ class Tokenizer: #строка -> список токенов
         ]
 
         return prev_token.type in unary_triggers
-    def next_token(self): # строка токена
+
+    def get_token_value(self, token):
+        """Конвертирует Token в строковое значение для парсера"""
+        if token.type == TokenType.EOF:
+            return None  # ← ВОТ ЗДЕСЬ! Возвращаем None, а не 'None'!
+
+        if token.type == TokenType.UNARY_MINUS:
+            return "u-"
+        elif token.type == TokenType.MINUS:
+            return "-"
+        elif token.type == TokenType.PLUS:
+            return "+"
+        elif token.type == TokenType.MULTIPLY:
+            return "*"
+        elif token.type == TokenType.DIVIDE:
+            return "/"
+        elif token.type == TokenType.POWER:
+            return "^"
+        elif token.type == TokenType.LPAREN:
+            return "("
+        elif token.type == TokenType.RPAREN:
+            return ")"
+        elif token.type == TokenType.NUMBER:
+            return token.value
+        else:
+            return token.value
+    def next_token(self):
         if self.current_pos < len(self.tokens):
             token = self.tokens[self.current_pos]
             self.current_pos += 1
-
-            if token.type == TokenType.NUMBER:
-                return token.value
-            elif token.type == TokenType.UNARY_MINUS:
-                return "u-"
-            else:
-                return token.value  # + - / * ^
+            return self.get_token_value(token)
         return None
 
     def peek_token(self):
         if self.current_pos < len(self.tokens):
             token = self.tokens[self.current_pos]
-            if token.type == TokenType.NUMBER:
-                return token.value
-            elif token.type == TokenType.UNARY_MINUS:
-                return "u-"
-            else:
-                return token.value
-        return None
+            return self.get_token_value(token)
 
 
 

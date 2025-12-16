@@ -1,3 +1,5 @@
+from core.node import NodeType
+
 class visualizer:
     @staticmethod
     def visualize(node):
@@ -7,63 +9,48 @@ class visualizer:
 
     @staticmethod
     def _display(node):
-
         label = str(node.value)
         width = len(label)
 
-        if node.left is None and node.right is None:
+        # ===== ЧИСЛО =====
+        if node.type == NodeType.NUMBER:
             return [label], width, width // 2
 
-        # только правый ребенок
-        if node.left is None:
-            right, rw, rm = visualizer._display(node.right)
+        # ===== УНАРНЫЙ ОПЕРАТОР =====
+        if node.type == NodeType.UNARY_OPERATOR:
+            # визуализируем правого потомка
+            child_lines, cw, cm = visualizer._display(node.right)
 
-            first = label + " " * rm + "\\"
-            second = " " * width + " " * rm + "\\"
+            # оператор слева от child (линия от родителя через /)
+            first = label + " " * (cw - 1)  # сдвиг под ребенка
+            second = "\\" + " " * (cw - 1)  # линия к child
 
-            shifted = [" " * width + line for line in right]
+            # сдвигаем потомка вправо под линию
+            shifted_child = [" " + line for line in child_lines]
 
-            return [first, second] + shifted, width + rw, width // 2
+            return [first, second] + shifted_child, cw, 0  # mid=0 чтобы родитель соединялся слева
 
-        # только левый ребенок
-        if node.right is None:
-            left, lw, lm = visualizer._display(node.left)
-
-            first = " " * lm + "/" + " " * (lw - lm - 1) + label
-            second = " " * lm + "/" + " " * (lw - lm - 1 + width)
-
-            shifted = [line + " " * width for line in left]
-
-            return [first, second] + shifted, lw + width, lw + width // 2
-
-        # оба потомка
-        left, lw, lm = visualizer._display(node.left)
-        right, rw, rm = visualizer._display(node.right)
-
-        first = (
-            " " * lm +
-            "/" +
-            " " * (lw - lm - 1 + width + rm) +
-            "\\"
-        )
-
-        second = (
-            " " * lm +
-            "/" +
-            " " * (lw - lm - 1 + width + rm) +
-            "\\"
-        )
+        # ===== БИНАРНЫЙ ОПЕРАТОР =====
+        left_lines, lw, lm = visualizer._display(node.left)
+        right_lines, rw, rm = visualizer._display(node.right)
 
         label_line = " " * lw + label + " " * rw
 
-        # выравнивание высот
-        max_h = max(len(left), len(right))
-        left += [" " * lw] * (max_h - len(left))
-        right += [" " * rw] * (max_h - len(right))
+        branch = (
+            " " * lm +
+            "/" +
+            " " * (lw - lm - 1 + width + rm) +
+            "\\"
+        )
+
+        # выравниваем высоту поддеревьев
+        max_h = max(len(left_lines), len(right_lines))
+        left_lines += [" " * lw] * (max_h - len(left_lines))
+        right_lines += [" " * rw] * (max_h - len(right_lines))
 
         merged = [
             l + " " * width + r
-            for l, r in zip(left, right)
+            for l, r in zip(left_lines, right_lines)
         ]
 
-        return [label_line, first, second] + merged, lw + width + rw, lw + width // 2
+        return [label_line, branch] + merged, lw + width + rw, lw + width // 2

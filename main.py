@@ -9,7 +9,6 @@ from utils.errors import (
     EvaluationError
 )
 
-
 def main():
     print("=" * 70)
     print("ИНТЕРАКТИВНЫЙ КАЛЬКУЛЯТОР С AST")

@@ -4,8 +4,6 @@ class NodeType:
     UNARY_OPERATOR = 'unary_operator'
 
 class Node:
-    """атрибуты будут или нет?"""
-    """да как будто все окей, они же там и есть атрибуты в ините"""
     def __init__(self, value, node_type, left=None, right=None):
         self.value = value
         self.type = node_type

@@ -96,7 +96,6 @@ class Tokenizer: #строка -> список токенов
             self.compiled_patterns = []
 
             for pattern, token_type in self.TOKEN_PATTERNS:
-                # re.compile('^' + pattern) - модуль и метод, '^' начало строки, + склейка
                 self.compiled_patterns.append((re.compile('^'+pattern), token_type))
 
         while expression:
@@ -145,9 +144,8 @@ class Tokenizer: #строка -> список токенов
         return prev_token.type in unary_triggers
 
     def get_token_value(self, token):
-        """Конвертирует Token в строковое значение для парсера"""
         if token.type == TokenType.EOF:
-            return None  # ← ВОТ ЗДЕСЬ! Возвращаем None, а не 'None'!
+            return None
 
         if token.type == TokenType.UNARY_MINUS:
             return "u-"
@@ -185,9 +183,6 @@ class Tokenizer: #строка -> список токенов
 
 
     def print_tokens(self):
-        print("=" * 60)
-        print("СПИСОК ТОКЕНОВ:")
-        print("=" * 60)
+        print("Список токенов:")
         for token in self.tokens:
             print(f"  {token}")
-        print("=" * 60)

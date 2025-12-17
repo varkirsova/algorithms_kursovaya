@@ -10,12 +10,10 @@ from utils.errors import (
 )
 
 def main():
-    print("=" * 70)
-    print("ИНТЕРАКТИВНЫЙ КАЛЬКУЛЯТОР С AST")
+    print("Дерево выражений.")
     print("Операции: +  -  *  /  ^  ( )")
     print("Унарный минус поддерживается")
     print("Для выхода введите: exit")
-    print("=" * 70)
 
     tokenizer = Tokenizer()
     parser = Parser(tokenizer)
@@ -32,24 +30,19 @@ def main():
                 print("Пустая строка.")
                 continue
 
-            # --- ТОКЕНИЗАЦИЯ ---
             tokenizer.tokenize(expr)
             tokenizer.print_tokens()
 
-            # --- ПАРСИНГ ---
             tree = parser.parse(expr)
 
-            # --- AST ---
-            print("\nAST (визуализация):")
+            print("\nВизуализация:")
             visualizer.visualize(tree)
 
-            # --- НОТАЦИИ ---
-            print("\nНотации:")
+            print("\nФормы записи:")
             print("  Infix   :", tree.infix())
             print("  Prefix  :", tree.prefix())
             print("  Postfix :", tree.postfix())
 
-            # --- ВЫЧИСЛЕНИЕ ---
             result = Evaluator.evaluate(tree)
             print("\nРезультат:")
             print(" ", result)

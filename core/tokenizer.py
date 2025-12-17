@@ -87,8 +87,10 @@ class Tokenizer: #строка -> список токенов
         self.current_pos = 0
         self.tokens = []
 
-        expression_without_spaces = expression.replace(' ', '')
-        if not expression_without_spaces:
+        expression = expression.replace(' ', '')
+        expression = expression.replace('\t', '')
+
+        if not expression:
             self.tokens.append(Token(TokenType.EOF, '', 0))
             return self.tokens
 

@@ -19,7 +19,7 @@ class Node:
         if self.type == NodeType.NUMBER:
             if self.left is not None or self.right is not None:
                 raise ValueError("Узел-число не должен иметь потомков!")
-            if not isinstance(self.value, (int, float)):
+            if not isinstance(self.value, (int)):
                 try:
                     self.value = int(self.value)
                 except:
@@ -115,19 +115,3 @@ class Node:
         return self.type == NodeType.NUMBER
     def is_operator(self):
         return self.type in [NodeType.BINARY_OPERATOR, NodeType.UNARY_OPERATOR]
-    def __str__(self):
-        if self.type == NodeType.NUMBER:
-            return f"Number({self.value})"
-
-        elif self.type == NodeType.BINARY_OPERATOR:
-            left_str = str(self.left.value) if self.left is not None else "None"
-            right_str = str(self.right.value) if self.right is not None else "None"
-
-            return f"BinOp({self.value}, L={left_str}, R={right_str})"
-
-        elif self.type == NodeType.UNARY_OPERATOR:
-            right_str = str(self.right.value) if self.right is not None else "None"
-
-            return f"UnOp({self.value}, R={right_str})"
-    def __repr__(self):
-        return self.__str__()

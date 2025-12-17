@@ -2,13 +2,14 @@ from core.node import NodeType
 
 class visualizer:
     @staticmethod
-    def visualize(node):
-        lines, _, _ = visualizer._display(node)
+    def visualize(node, indent=4):
+        lines, _, _ = visualizer._display(node, spacing=2)  # увеличен spacing для лучшего разделения
         for line in lines:
-            print(line)
+            print(" " * indent + line)
 
     @staticmethod
-    def _display(node):
+    def _display(node, spacing=2):
+        """spacing - минимальное расстояние между поддеревьями"""
         label = str(node.value)
         width = len(label)
 
@@ -19,38 +20,68 @@ class visualizer:
         # ===== УНАРНЫЙ ОПЕРАТОР =====
         if node.type == NodeType.UNARY_OPERATOR:
             # визуализируем правого потомка
-            child_lines, cw, cm = visualizer._display(node.right)
+            child_lines, cw, cm = visualizer._display(node.right, spacing)
 
-            # оператор слева от child (линия от родителя через /)
-            first = label + " " * (cw - 1)  # сдвиг под ребенка
-            second = "\\" + " " * (cw - 1)  # линия к child
+            # Важно: оператор должен быть центрирован над ребенком
+            child_mid = cm  # середина ребенка
 
-            # сдвигаем потомка вправо под линию
-            shifted_child = [" " + line for line in child_lines]
+            # Создаем линии для унарного оператора
+            if child_mid >= 0:
+                # Оператор над серединой ребенка
+                first = " " * child_mid + label + " " * (cw - child_mid - 1)
+                # Линия от оператора к ребенку
+                second = " " * child_mid + "\\" + " " * (cw - child_mid - 1)
+            else:
+                # Если середина отрицательная (бывает в некоторых случаях)
+                first = label + " " * (cw - 1)
+                second = "\\" + " " * (cw - 1)
 
-            return [first, second] + shifted_child, cw, 0  # mid=0 чтобы родитель соединялся слева
+            # Ребенок без дополнительного сдвига
+            shifted_child = child_lines
+
+            return [first, second] + shifted_child, cw, max(0, child_mid)
 
         # ===== БИНАРНЫЙ ОПЕРАТОР =====
-        left_lines, lw, lm = visualizer._display(node.left)
-        right_lines, rw, rm = visualizer._display(node.right)
+        left_lines, lw, lm = visualizer._display(node.left, spacing)
+        right_lines, rw, rm = visualizer._display(node.right, spacing)
 
-        label_line = " " * lw + label + " " * rw
+        # Добавляем spacing между поддеревьями
+        space_between = max(spacing, 3)  # минимум 3 пробела между поддеревьями
 
-        branch = (
-            " " * lm +
-            "/" +
-            " " * (lw - lm - 1 + width + rm) +
-            "\\"
+        # Общая ширина
+        total_width = lw + space_between + rw
+
+        # Центр оператора
+        operator_pos = lw + (total_width - lw - rw) // 2
+
+        # Линия с оператором
+        label_line = (
+                " " * (operator_pos - width // 2) +
+                label +
+                " " * (total_width - operator_pos - width // 2)
         )
 
-        # выравниваем высоту поддеревьев
+        # Ветки
+        branch_left = " " * (operator_pos - 1) + "/"
+        branch_right = " " * (total_width - operator_pos - 1) + "\\"
+
+        # Объединяем ветки
+        branch_line = list(" " * total_width)
+        if operator_pos > 0:
+            branch_line[operator_pos - 1] = "/"
+        if operator_pos < total_width - 1:
+            branch_line[operator_pos + 1] = "\\"
+        branch_line = "".join(branch_line)
+
+        # Выравниваем высоту поддеревьев
         max_h = max(len(left_lines), len(right_lines))
         left_lines += [" " * lw] * (max_h - len(left_lines))
         right_lines += [" " * rw] * (max_h - len(right_lines))
 
+        # Соединяем поддеревья
         merged = [
-            l + " " * width + r
+            l + " " * space_between + r
             for l, r in zip(left_lines, right_lines)
         ]
 
-        return [label_line, branch] + merged, lw + width + rw, lw + width // 2
+        return [label_line, branch_line] + merged, total_width, operator_pos

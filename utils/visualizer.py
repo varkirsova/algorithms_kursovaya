@@ -12,13 +12,11 @@ class visualizer:
         label = str(node.value)
         width = len(label)
 
-        # ===== ЧИСЛО =====
         if node.type == NodeType.NUMBER:
             return [label], width, width // 2
 
-        # ===== УНАРНЫЙ ОПЕРАТОР =====
         if node.type == NodeType.UNARY_OPERATOR:
-            # визуализируем правого потомка
+            # визуализируем правого ребенка
             child_lines, cw, cm = visualizer._display(node.right)
 
             # оператор слева от child (линия от родителя через /)
@@ -30,7 +28,6 @@ class visualizer:
 
             return [first, second] + shifted_child, cw, 0  # mid=0 чтобы родитель соединялся слева
 
-        # ===== БИНАРНЫЙ ОПЕРАТОР =====
         left_lines, lw, lm = visualizer._display(node.left)
         right_lines, rw, rm = visualizer._display(node.right)
 

@@ -20,26 +20,26 @@ class Node:
         # у ун. опер. дм иметь одного потомка (правого)
         if self.type == NodeType.NUMBER:
             if self.left is not None or self.right is not None:
-                raise ValueError("узел-число не должен иметь потомков!")
+                raise ValueError("Узел-число не должен иметь потомков!")
             if not isinstance(self.value, (int, float)):
                 try:
                     self.value = int(self.value)
                 except:
-                    raise ValueError("некорректное числовое значение!")
+                    raise ValueError("Некорректное числовое значение!")
 
         elif self.type == NodeType.BINARY_OPERATOR:
             if self.left is None or self.right is None:
-                raise ValueError("бинарный оператор должен иметь двух потомков!")
+                raise ValueError("Бинарный оператор должен иметь двух потомков!")
             if self.value not in ['+', '-', '*', '/', '^']:
-                raise ValueError(f"неподходящий оператор: {self.value}")
+                raise ValueError(f"Неподходящий оператор: {self.value}")
 
         elif self.type == NodeType.UNARY_OPERATOR:
             if self.right is None:
-                raise ValueError("унарный оператор должен иметь одного потомка!")
+                raise ValueError("Унарный оператор должен иметь одного потомка!")
             if self.left is not None:
-                raise ValueError("унарный оператор должен иметь только правого потомка!")
+                raise ValueError("Унарный оператор должен иметь только правого потомка!")
             if self.value != '-':
-                raise ValueError(f"неподходящий унарный оператор: {self.value}")
+                raise ValueError(f"Неподходящий унарный оператор: {self.value}")
 
     # через рекурсию
     def prefix(self):

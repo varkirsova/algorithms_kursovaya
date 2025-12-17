@@ -20,34 +20,34 @@ class Token:
 
     def __str__(self):
         if self.type == TokenType.NUMBER:
-            return f"число({self.value})"
+            return f"Число({self.value})"
 
         elif self.type == TokenType.PLUS:
-            return f"сложение(+)"
+            return f"Сложение(+)"
 
         elif self.type == TokenType.MINUS:
-            return f"вычитание(-)"
+            return f"Вычитание(-)"
 
         elif self.type == TokenType.UNARY_MINUS:
-            return f"унарный минус(-)"
+            return f"Унарный минус(-)"
 
         elif self.type == TokenType.MULTIPLY:
-            return f"умножение(*)"
+            return f"Умножение(*)"
 
         elif self.type == TokenType.DIVIDE:
-            return f"деление(/)"
+            return f"Деление(/)"
 
         elif self.type == TokenType.POWER:
-            return f"степень(^)"
+            return f"Степень(^)"
 
         elif self.type == TokenType.LPAREN:
-            return f"левая скобка('(')"
+            return f"Левая скобка('(')"
 
         elif self.type == TokenType.RPAREN:
-            return f"правая скобка(')')"
+            return f"Правая скобка(')')"
 
         elif self.type == TokenType.EOF:
-            return f"конец выражения"
+            return f"Конец выражения"
 
         else:
             return f"Token({self.type.name}, '{self.value}')"
@@ -60,7 +60,7 @@ class TokenizerError(Exception):
 
 class InvalidCharacterError(TokenizerError):
     def __init__(self, char, position):
-        super().__init__(f"некорректный символ '{char}' на позиции {position}")
+        super().__init__(f"Некорректный символ '{char}' на позиции {position}")
         self.char = char
         self.position = position
 
